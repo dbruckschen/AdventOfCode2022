@@ -27,6 +27,23 @@ int calculate_priority_sum(struct rucksack *sacks, int num_rucksacks) {
 	return sum;
 }
 
+void find_shared_item(struct rucksack *rucksack, size_t compartment_length) {
+	bool found_shared_item = false;
+	
+	for(int c1 = 0; c1 < compartment_length && !found_shared_item; c1++) {
+		char current_item_c1 = rucksack->first_compartment[c1];
+			
+		for(int c2 = 0; c2 < compartment_length; c2++) { 
+			if(current_item_c1 == rucksack->second_compartment[c2]) {
+				// found the shared item for both compartments
+				rucksack->compartment_shared_item = current_item_c1;
+				found_shared_item = true;
+				break;
+			}
+		}
+	}
+}
+
 int main(void) {
 	FILE *fp;
 	fopen_s(&fp, "input.txt", "r");
@@ -51,19 +68,7 @@ int main(void) {
 		memcpy(rucksacks[i].first_compartment, line, comp_len);
 		memcpy(rucksacks[i].second_compartment, line+comp_len, comp_len);
 
-		bool found_shared_item = false;
-		for(int c1 = 0; c1 < comp_len && !found_shared_item; c1++) {
-			char current_item_c1 = rucksacks[i].first_compartment[c1];
-			
-			for(int c2 = 0; c2 < len/2; c2++) { 
-				if(current_item_c1 == rucksacks[i].second_compartment[c2]) {
-					// found the shared item for both compartments
-					rucksacks[i].compartment_shared_item = current_item_c1;
-					found_shared_item = true;
-					break;
-				}
-			}
-		}
+		find_shared_item(&rucksacks[i], comp_len);
 		
 		num_rucksacks++;
 	}
@@ -73,5 +78,3 @@ int main(void) {
 
 	return 0;
 }
-
-
